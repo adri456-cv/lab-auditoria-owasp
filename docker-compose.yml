@@ -1,0 +1,29 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: lab_db
+    restart: always
+    environment:
+      POSTGRES_USER: devuser
+      POSTGRES_PASSWORD: devpassword123
+      POSTGRES_DB: banco_dev
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+
+  web:
+    build: .
+    container_name: lab_web
+    restart: always
+    environment:
+      - DB_HOST=db
+      - DB_USER=devuser
+      - DB_PASSWORD=devpassword123
+      - DB_NAME=banco_dev
+      - FLASK_ENV=development
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
